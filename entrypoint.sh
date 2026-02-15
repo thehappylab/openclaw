@@ -55,7 +55,7 @@ fi
 # ---------------------------------------------------------------------------
 # Preinstall ClawHub skills in the background (non-blocking)
 # ---------------------------------------------------------------------------
-if [ -n "${OPENCLAW_PREINSTALL_CLAWS:-}" ]; then
+if [ -n "${OPENCLAW_PREINSTALL_SKILLS:-}" ]; then
   echo "[entrypoint] Preinstalling ClawHub skills in the background ..."
   sudo -u "$OPENCLAW_USER" /preinstall-claws.sh &
 fi

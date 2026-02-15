@@ -1,5 +1,5 @@
 ---
-name: umami-api
+name: umami_api
 description: Interact with the Umami analytics API to manage websites, retrieve stats, sessions, events, realtime data, and generate reports. Use when the user wants to query website analytics, manage tracked websites, view visitor sessions, get pageview metrics, or create Umami reports.
 ---
 

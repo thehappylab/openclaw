@@ -1,5 +1,5 @@
 ---
-name: coolify-cli
+name: coolify_cli
 description: Manage Coolify applications, projects, and deployments using the coolify CLI. Use when the user wants to deploy apps, manage projects, configure GitHub integrations, handle environment variables, or interact with Coolify resources from the terminal.
 ---
 

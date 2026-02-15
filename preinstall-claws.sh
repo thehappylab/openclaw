@@ -3,33 +3,28 @@
 # Preinstalls OpenClaw skills from ClawHub if not already present.
 # Runs in the background so it does not block gateway startup.
 #
-# Reads a comma-separated list from the env var OPENCLAW_PREINSTALL_CLAWS.
-# Entries can be "owner/name" (e.g. "steipete/summarize") or just "name".
-# The CLI slug is always the name part only (owner/ prefix is stripped).
+# Reads a comma-separated list of slugs from OPENCLAW_PREINSTALL_SKILLS.
 # Skills are installed into $OPENCLAW_WORKSPACE_DIR/skills.
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
-CLAWS="${OPENCLAW_PREINSTALL_CLAWS:-}"
+SKILLS="${OPENCLAW_PREINSTALL_SKILLS:-}"
 WORKDIR="${OPENCLAW_WORKSPACE_DIR:-/data/workspace}"
 
-if [ -z "$CLAWS" ]; then
+if [ -z "$SKILLS" ]; then
   exit 0
 fi
 
-IFS=',' read -ra CLAW_LIST <<< "$CLAWS"
+IFS=',' read -ra SKILL_LIST <<< "$SKILLS"
 
 SKILLS_DIR="$WORKDIR/skills"
 mkdir -p "$SKILLS_DIR"
 
-echo "[preinstall-claws] Checking ${#CLAW_LIST[@]} skill(s) in $SKILLS_DIR ..."
+echo "[preinstall-claws] Checking ${#SKILL_LIST[@]} skill(s) in $SKILLS_DIR ..."
 
-for claw in "${CLAW_LIST[@]}"; do
-  claw=$(echo "$claw" | xargs)  # trim whitespace
-  [ -z "$claw" ] && continue
-
-  # Strip owner prefix if present (steipete/summarize -> summarize)
-  slug="${claw##*/}"
+for slug in "${SKILL_LIST[@]}"; do
+  slug=$(echo "$slug" | xargs)  # trim whitespace
+  [ -z "$slug" ] && continue
 
   if [ -d "$SKILLS_DIR/$slug" ]; then
     echo "[preinstall-claws] Already installed: $slug"
