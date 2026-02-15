@@ -1,5 +1,7 @@
 # openclaw
 
+**Version:** `2026.2.15-3`
+
 Custom Docker image for running [OpenClaw](https://github.com/coollabsio/openclaw) on a [Coolify](https://coolify.io) instance, extended with additional CLI tools.
 
 ## What this repo does
@@ -18,12 +20,25 @@ The image is automatically built and pushed to **GitHub Container Registry** on 
 
 ```
 ghcr.io/thehappylab/openclaw:latest
+ghcr.io/thehappylab/openclaw:2026.2.15-1
+ghcr.io/thehappylab/openclaw:<short-sha>
+```
+
+## Versioning
+
+Uses CalVer: `YYYY.M.D-N` (date + continuous counter).
+
+```bash
+make version   # show current version
+make bump      # bump version → updates VERSION, docker-compose, build.yml, README
 ```
 
 ## Repository structure
 
 ```
 .
+├── VERSION                     # Source of truth for the current version
+├── Makefile                    # Version bump tooling
 ├── Dockerfile                  # Extends coollabsio/openclaw with CLI tools
 ├── docker-compose.coolify.yaml # Coolify service definition (openclaw + browser)
 └── .github/workflows/

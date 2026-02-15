@@ -1,5 +1,9 @@
 FROM coollabsio/openclaw:latest
 
+ARG BUILD_VERSION=dev
+LABEL org.opencontainers.image.version="${BUILD_VERSION}"
+ENV OPENCLAW_VERSION="${BUILD_VERSION}"
+
 USER root
 
 # ---------------------------------------------------------------------------
