@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
     ca-certificates \
     gnupg \
-    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------
@@ -76,10 +75,20 @@ RUN npm install -g clawhub
 RUN curl -fsSL https://raw.githubusercontent.com/coollabsio/coolify-cli/main/scripts/install.sh | bash
 
 # ---------------------------------------------------------------------------
-# Prepare directories for non-root runtime
+# Brew wrapper: auto-drops to claw user when invoked as root
+# (Homebrew refuses to run as root; the gateway runs as root)
 # ---------------------------------------------------------------------------
-RUN chown -R claw:claw /app \
-    && mkdir -p /data && chown -R claw:claw /data
+RUN BREW_REAL="$(readlink -f /home/linuxbrew/.linuxbrew/bin/brew)" \
+    && rm /home/linuxbrew/.linuxbrew/bin/brew \
+    && printf '#!/bin/bash\nif [ "$(id -u)" = "0" ]; then\n  exec sudo -u claw %s "$@"\nelse\n  exec %s "$@"\nfi\n' \
+       "$BREW_REAL" "$BREW_REAL" \
+       > /home/linuxbrew/.linuxbrew/bin/brew \
+    && chmod +x /home/linuxbrew/.linuxbrew/bin/brew
+
+# ---------------------------------------------------------------------------
+# Prepare /data for volume mounts
+# ---------------------------------------------------------------------------
+RUN mkdir -p /data
 
 # ---------------------------------------------------------------------------
 # Bundled skills
@@ -87,7 +96,7 @@ RUN chown -R claw:claw /app \
 COPY skills/ /bundled-skills/
 
 # ---------------------------------------------------------------------------
-# Custom entrypoint (configures tools, then drops to non-root user)
+# Custom entrypoint (configures tools, then calls original entrypoint)
 # ---------------------------------------------------------------------------
 COPY entrypoint.sh /custom-entrypoint.sh
 COPY preinstall-claws.sh /preinstall-claws.sh
