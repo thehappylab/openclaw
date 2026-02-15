@@ -55,6 +55,18 @@ USER root
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
 
 # ---------------------------------------------------------------------------
+# Node.js (needed for clawhub CLI)
+# ---------------------------------------------------------------------------
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------------------
+# ClawHub CLI (skill management)
+# ---------------------------------------------------------------------------
+RUN npm install -g clawhub
+
+# ---------------------------------------------------------------------------
 # Coolify CLI
 # ---------------------------------------------------------------------------
 RUN curl -fsSL https://raw.githubusercontent.com/coollabsio/coolify-cli/main/scripts/install.sh | bash
@@ -69,5 +81,6 @@ RUN chown -R claw:claw /app \
 # Custom entrypoint (configures tools, then drops to non-root user)
 # ---------------------------------------------------------------------------
 COPY entrypoint.sh /custom-entrypoint.sh
-RUN chmod +x /custom-entrypoint.sh
+COPY preinstall-claws.sh /preinstall-claws.sh
+RUN chmod +x /custom-entrypoint.sh /preinstall-claws.sh
 ENTRYPOINT ["/custom-entrypoint.sh"]

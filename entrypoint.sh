@@ -28,6 +28,14 @@ if [ -n "$BW_SERVER" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Preinstall ClawHub skills in the background (non-blocking)
+# ---------------------------------------------------------------------------
+if [ -n "${OPENCLAW_PREINSTALL_CLAWS:-}" ]; then
+  echo "[entrypoint] Preinstalling ClawHub skills in the background ..."
+  gosu "$OPENCLAW_USER" /preinstall-claws.sh &
+fi
+
+# ---------------------------------------------------------------------------
 # Drop privileges and hand off to the original openclaw entrypoint
 # ---------------------------------------------------------------------------
 if [ "$(id -u)" = "0" ]; then
