@@ -11,34 +11,32 @@ Manage applications, projects, and deployments on a Coolify instance using the `
 
 - The `coolify` CLI must be installed and available in `$PATH`
 - A valid API token from the Coolify dashboard (`/security/api-tokens`)
-- A configured context (see Context Setup below)
 
 ## Context Setup
 
-Before using any command, ensure a context is configured:
+The CLI context is **auto-configured at container startup** when the `COOLIFY_API_TOKEN` environment variable is set. The entrypoint creates a `default` context pointing at:
 
-```bash
-# Self-hosted instance
-coolify context add <name> <url> <token>
+- **URL**: `COOLIFY_API_URL` (defaults to `https://app.coolify.io`)
+- **Token**: `COOLIFY_API_TOKEN`
 
-# Set as default
-coolify context use <name>
-
-# Verify connection
-coolify context verify
-```
-
-For cloud-hosted Coolify:
-
-```bash
-coolify context set-token cloud <token>
-```
-
-Always verify the context before running destructive operations:
+To verify the auto-configured context:
 
 ```bash
 coolify context verify
 coolify context version
+```
+
+### Manual context setup (if not using the env var)
+
+```bash
+# Self-hosted instance
+coolify context add <name> <url> <token> --default
+
+# Cloud-hosted
+coolify context set-token cloud <token>
+
+# Verify connection
+coolify context verify
 ```
 
 ## Application Workflows

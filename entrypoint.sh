@@ -28,6 +28,16 @@ if [ -n "$BW_SERVER" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Auto-configure Coolify CLI context (if COOLIFY_API_TOKEN is set)
+# ---------------------------------------------------------------------------
+if [ -n "${COOLIFY_API_TOKEN:-}" ]; then
+  COOLIFY_URL="${COOLIFY_API_URL:-https://app.coolify.io}"
+  echo "[entrypoint] Configuring Coolify CLI context (url: $COOLIFY_URL)"
+  gosu "$OPENCLAW_USER" coolify context add default "$COOLIFY_URL" "$COOLIFY_API_TOKEN" --default --force 2>/dev/null || \
+    echo "[entrypoint] Warning: Failed to configure Coolify CLI context"
+fi
+
+# ---------------------------------------------------------------------------
 # Copy bundled skills into the workspace (non-destructive)
 # ---------------------------------------------------------------------------
 WORKDIR="${OPENCLAW_WORKSPACE_DIR:-/data/workspace}"
