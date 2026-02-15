@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
     ca-certificates \
     gnupg \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------------
@@ -44,10 +45,10 @@ RUN curl -sL "https://vault.bitwarden.com/download/?app=cli&platform=linux" -o /
 # Homebrew (Linuxbrew)
 # ---------------------------------------------------------------------------
 ENV NONINTERACTIVE=1
-RUN useradd -m -s /bin/bash linuxbrew 2>/dev/null || true \
-    && echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN useradd -m -s /bin/bash claw 2>/dev/null || true \
+    && echo 'claw ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-USER linuxbrew
+USER claw
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 USER root
@@ -59,7 +60,13 @@ ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}
 RUN curl -fsSL https://raw.githubusercontent.com/coollabsio/coolify-cli/main/scripts/install.sh | bash
 
 # ---------------------------------------------------------------------------
-# Custom entrypoint (configures tools, then calls original entrypoint)
+# Prepare directories for non-root runtime
+# ---------------------------------------------------------------------------
+RUN chown -R claw:claw /app \
+    && mkdir -p /data && chown -R claw:claw /data
+
+# ---------------------------------------------------------------------------
+# Custom entrypoint (configures tools, then drops to non-root user)
 # ---------------------------------------------------------------------------
 COPY entrypoint.sh /custom-entrypoint.sh
 RUN chmod +x /custom-entrypoint.sh
