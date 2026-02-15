@@ -57,3 +57,10 @@ ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}
 # Coolify CLI
 # ---------------------------------------------------------------------------
 RUN curl -fsSL https://raw.githubusercontent.com/coollabsio/coolify-cli/main/scripts/install.sh | bash
+
+# ---------------------------------------------------------------------------
+# Custom entrypoint (configures tools, then calls original entrypoint)
+# ---------------------------------------------------------------------------
+COPY entrypoint.sh /custom-entrypoint.sh
+RUN chmod +x /custom-entrypoint.sh
+ENTRYPOINT ["/custom-entrypoint.sh"]
