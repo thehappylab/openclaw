@@ -45,6 +45,8 @@ This name is used everywhere:
 
 ## Step 2: Create GitHub repository from template
 
+> **Important:** Always create the repository as **private**. Never use `--public`.
+
 ```bash
 gh repo create "thehappylab/<projectname>" \
   --template thehappylab/app-template \
