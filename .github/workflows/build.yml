@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
@@ -62,7 +62,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILD_VERSION=2026.2.15-3
+            BUILD_VERSION=2026.2.15-4
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -75,3 +75,24 @@ jobs:
             --method PUT \
             /orgs/${{ github.repository_owner }}/packages/container/openclaw/visibility \
             -f visibility=public || echo "Could not set visibility – set it manually in package settings"
+
+      - name: Create GitHub Release
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          TAG="v${VERSION}"
+
+          # Create the tag (lightweight, pointing at this commit)
+          git tag "$TAG" || true
+
+          # Push the tag to the remote
+          git push origin "$TAG" || true
+
+          # Create a release (skip if it already exists for this tag)
+          gh release create "$TAG" \
+            --title "Openclaw $VERSION" \
+            --generate-notes \
+            --latest \
+            || echo "Release $TAG already exists – skipping"
