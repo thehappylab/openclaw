@@ -12,6 +12,10 @@ Manage applications, projects, and deployments on a Coolify instance using the `
 - The `coolify` CLI must be installed and available in `$PATH`
 - A valid API token from the Coolify dashboard (`/security/api-tokens`)
 
+## Safety Rule
+
+- If a user wants to delete something, always ask for explicit confirmation before running the delete command.
+
 ## Context Setup
 
 The CLI context is **auto-configured at container startup** when the `COOLIFY_API_TOKEN` environment variable is set. The entrypoint creates a `default` context pointing at:

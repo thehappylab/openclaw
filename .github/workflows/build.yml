@@ -62,7 +62,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILD_VERSION=2026.2.15-6
+            BUILD_VERSION=2026.2.15-8
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
