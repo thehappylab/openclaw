@@ -28,6 +28,23 @@ if [ -n "$BW_SERVER" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Copy bundled skills into the workspace (non-destructive)
+# ---------------------------------------------------------------------------
+WORKDIR="${OPENCLAW_WORKSPACE_DIR:-/data/workspace}"
+SKILLS_DIR="$WORKDIR/skills"
+if [ -d /bundled-skills ] && [ "$(ls -A /bundled-skills 2>/dev/null)" ]; then
+  mkdir -p "$SKILLS_DIR"
+  for skill in /bundled-skills/*/; do
+    skill_name="$(basename "$skill")"
+    if [ ! -d "$SKILLS_DIR/$skill_name" ]; then
+      echo "[entrypoint] Installing bundled skill: $skill_name"
+      cp -r "$skill" "$SKILLS_DIR/$skill_name"
+      chown -R "$OPENCLAW_USER:$OPENCLAW_USER" "$SKILLS_DIR/$skill_name"
+    fi
+  done
+fi
+
+# ---------------------------------------------------------------------------
 # Preinstall ClawHub skills in the background (non-blocking)
 # ---------------------------------------------------------------------------
 if [ -n "${OPENCLAW_PREINSTALL_CLAWS:-}" ]; then

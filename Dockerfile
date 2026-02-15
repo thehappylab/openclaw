@@ -78,6 +78,11 @@ RUN chown -R claw:claw /app \
     && mkdir -p /data && chown -R claw:claw /data
 
 # ---------------------------------------------------------------------------
+# Bundled skills
+# ---------------------------------------------------------------------------
+COPY skills/ /bundled-skills/
+
+# ---------------------------------------------------------------------------
 # Custom entrypoint (configures tools, then drops to non-root user)
 # ---------------------------------------------------------------------------
 COPY entrypoint.sh /custom-entrypoint.sh
