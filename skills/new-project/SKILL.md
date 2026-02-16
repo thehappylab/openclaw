@@ -73,23 +73,30 @@ Use `coolify github list` to find the existing GitHub App integration and note i
 
 ### 3b. Create a new Coolify project
 
+ Make it a nice looking name and meaningfull description
+
+
 ```bash
 curl -s -X POST "${COOLIFY_API_URL}/api/v1/projects" \
   -H "Authorization: Bearer ${COOLIFY_API_TOKEN}" \
   -H "Content-Type: application/json" \
-  -d '{"name":"<projectname>"}' | jq
+  -d '{"name":"<name>", "description":"<description>"}' | jq
 ```
 
 Note the `uuid` from the response.
 
 ### 3c. Create the Coolify application (Docker Compose buildpack)
 
+Make the name nice looking name and meaningfull description
+
+
 ```bash
-curl -s -X POST "${COOLIFY_API_URL}/api/v1/applications" \
+curl -s -X POST "${COOLIFY_API_URL}/api/v1/applications/private-github-app" \
   -H "Authorization: Bearer ${COOLIFY_API_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "<projectname>",
+    "name": "<name>",
+    "description": "<description>",
     "server_uuid": "<server-uuid>",
     "project_uuid": "<project-uuid>",
     "environment_name": "production",
@@ -97,8 +104,8 @@ curl -s -X POST "${COOLIFY_API_URL}/api/v1/applications" \
     "git_repository": "thehappylab/<projectname>",
     "git_branch": "main",
     "github_app_uuid": "<github-app-uuid>",
-    "domains": "<projectname>.thehappylab.com",
-    "instant_deploy": false
+    "domains": "<projectname>.thehappylab.com:3000",
+    "instant_deploy": true
   }' | jq
 ```
 
