@@ -68,7 +68,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
 # ---------------------------------------------------------------------------
 # ClawHub CLI (skill management)
 # ---------------------------------------------------------------------------
-RUN npm install -g clawhub
+RUN npm install -g clawhub pnpm
 
 # ---------------------------------------------------------------------------
 # Coolify CLI
