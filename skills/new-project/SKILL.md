@@ -39,8 +39,8 @@ This name is used everywhere:
 |---------------|---------|
 | GitHub repo | `thehappylab/<projectname>` |
 | Domain | `<projectname>.thehappylab.com` |
-| Coolify project | `<projectname>` |
-| Coolify app | `<projectname>` |
+| Coolify project | `<projectname as nice looking>` |
+| Coolify app | `<projectname as nice looking>` |
 | Umami website | `<projectname>.thehappylab.com` |
 
 ## Step 2: Create GitHub repository from template
