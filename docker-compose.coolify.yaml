@@ -1,6 +1,6 @@
 services:
   openclaw:
-    image: 'ghcr.io/thehappylab/openclaw:2026.2.16-2'
+    image: 'ghcr.io/thehappylab/openclaw:2026.2.16-3'
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENCLAW_PRIMARY_MODEL=${PRIMARY_MODEL}

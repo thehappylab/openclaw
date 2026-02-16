@@ -26,6 +26,15 @@ The template `thehappylab/app-template` ships with:
 
 No manual setup of these is needed — they come from the template.
 
+## UI implementation rule
+
+When the user asks to build an application/website and implementation starts:
+
+- Remove unnecessary template components, pages, sections, and demo content as early as possible.
+- Keep only what is needed for the requested product scope.
+- Use the **frontend-desin** skill to design and polish an awesome-looking UI before finalizing.
+- Prefer a clean, focused, visually strong interface over shipping template leftovers.
+
 ## Step 1: Get the project name
 
 Ask the user for a **project name** if not already provided. Validate the name:

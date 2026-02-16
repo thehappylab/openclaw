@@ -92,6 +92,13 @@ RUN BREW_REAL="$(readlink -f /home/linuxbrew/.linuxbrew/bin/brew)" \
 RUN mkdir -p /data
 
 # ---------------------------------------------------------------------------
+# Default shell preferences (interactive sessions should open in bash)
+# ---------------------------------------------------------------------------
+RUN usermod -s /bin/bash root \
+    && usermod -s /bin/bash claw
+ENV SHELL=/bin/bash
+
+# ---------------------------------------------------------------------------
 # Bundled skills
 # ---------------------------------------------------------------------------
 COPY skills/ /bundled-skills/
@@ -103,3 +110,4 @@ COPY entrypoint.sh /custom-entrypoint.sh
 COPY preinstall-claws.sh /preinstall-claws.sh
 RUN chmod +x /custom-entrypoint.sh /preinstall-claws.sh
 ENTRYPOINT ["/custom-entrypoint.sh"]
+CMD ["/bin/bash"]
