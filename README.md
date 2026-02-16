@@ -1,6 +1,6 @@
 # openclaw
 
-**Version:** `2026.2.16-4`
+**Version:** `2026.2.16-5`
 
 Custom Docker image for running [OpenClaw](https://github.com/coollabsio/openclaw) on a [Coolify](https://coolify.io) instance, extended with additional CLI tools.
 

@@ -1,6 +1,6 @@
 services:
   openclaw:
-    image: 'ghcr.io/thehappylab/openclaw:2026.2.16-4'
+    image: 'ghcr.io/thehappylab/openclaw:2026.2.16-5'
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -21,7 +21,7 @@ services:
       - UMAMI_API_URL=${UMAMI_API_URL}
       - UMAMI_API_TOKEN=${UMAMI_API_TOKEN}
       
-      - DISCORD_GROUP_POLICY=open
+      - DISCORD_GROUP_POLICY=${HOOKS_ENABLED:-open}
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
             
       - AUTH_USERNAME=$SERVICE_USER_OPENCLAW
@@ -32,6 +32,8 @@ services:
       - 'BROWSER_EVALUATE_ENABLED=${BROWSER_EVALUATE_ENABLED:-true}'
       - 'BROWSER_SNAPSHOT_MODE=${BROWSER_SNAPSHOT_MODE:-efficient}'
       - 'HOOKS_ENABLED=${HOOKS_ENABLED:-false}'
+
+      - BRAVE_WEBSEARCH_API_KEY=${BRAVE_WEBSEARCH_API_KEY}
 
     volumes:
       - 'openclaw-data:/data'
