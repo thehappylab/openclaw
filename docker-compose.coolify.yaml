@@ -1,6 +1,6 @@
 services:
   openclaw:
-    image: 'ghcr.io/thehappylab/openclaw:2026.2.16-5'
+    image: 'ghcr.io/thehappylab/openclaw:2026.2.16-6'
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -22,7 +22,6 @@ services:
       - UMAMI_API_URL=${UMAMI_API_URL}
       - UMAMI_API_TOKEN=${UMAMI_API_TOKEN}
       
-      - DISCORD_GROUP_POLICY=${DISCORD_GROUP_POLICY:-open}
       - DISCORD_GROWTH_BOT_TOKEN=${DISCORD_GROWTH_BOT_TOKEN}
       - DISCORD_BUILDER_BOT_TOKEN=${DISCORD_BUILDER_BOT_TOKEN}
       - DISCORD_OPERATION_BOT_TOKEN=${DISCORD_OPERATION_BOT_TOKEN}
