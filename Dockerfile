@@ -55,6 +55,7 @@ RUN useradd -m -s /bin/bash claw 2>/dev/null || true \
 
 USER claw
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+RUN pip install --user google-auth
 
 USER root
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
