@@ -46,6 +46,9 @@ if [ "$(id -u)" = "0" ] && [ -n "$REAL_OPENCLAW_BIN" ]; then
   cat > "$WRAPPER_DIR/openclaw" <<EOF
 #!/bin/bash
 if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "gateway" ]; then
+  # Upstream setup runs as root and may leave state files root-owned.
+  # Normalize ownership right before starting the long-running gateway.
+  chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
   exec sudo -E -u "$OPENCLAW_USER" "$REAL_OPENCLAW_BIN" "\$@"
 fi
 exec "$REAL_OPENCLAW_BIN" "\$@"
