@@ -2,6 +2,7 @@
 set -e
 
 OPENCLAW_USER="claw"
+REAL_OPENCLAW_BIN="$(command -v openclaw || true)"
 
 # ---------------------------------------------------------------------------
 # Ensure /data is writable by the claw user (handles fresh volumes)
@@ -36,6 +37,22 @@ if [ -n "${COOLIFY_API_TOKEN:-}" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Hand off to the original openclaw entrypoint (runs as root, as designed)
+# Ensure gateway runs as non-root claw user
+# (upstream entrypoint still needs root for nginx + runtime setup)
 # ---------------------------------------------------------------------------
+if [ "$(id -u)" = "0" ] && [ -n "$REAL_OPENCLAW_BIN" ]; then
+  WRAPPER_DIR="/tmp/openclaw-wrapper"
+  mkdir -p "$WRAPPER_DIR"
+  cat > "$WRAPPER_DIR/openclaw" <<EOF
+#!/bin/bash
+if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "gateway" ]; then
+  exec sudo -E -u "$OPENCLAW_USER" "$REAL_OPENCLAW_BIN" "\$@"
+fi
+exec "$REAL_OPENCLAW_BIN" "\$@"
+EOF
+  chmod +x "$WRAPPER_DIR/openclaw"
+  export PATH="$WRAPPER_DIR:$PATH"
+  echo "[entrypoint] openclaw gateway will run as user: $OPENCLAW_USER"
+fi
+
 exec /app/scripts/entrypoint.sh "$@"
