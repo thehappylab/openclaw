@@ -3,11 +3,16 @@ set -e
 
 OPENCLAW_USER="claw"
 REAL_OPENCLAW_BIN="$(command -v openclaw || true)"
+REAL_NODE_BIN="$(command -v node || true)"
+STATE_DIR="${OPENCLAW_STATE_DIR:-/data/.openclaw}"
 
 # ---------------------------------------------------------------------------
 # Ensure /data is writable by the claw user (handles fresh volumes)
 # ---------------------------------------------------------------------------
 chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
+mkdir -p "$STATE_DIR" 2>/dev/null || true
+chown "$OPENCLAW_USER:$OPENCLAW_USER" "$STATE_DIR" 2>/dev/null || true
+chmod 700 "$STATE_DIR" 2>/dev/null || true
 
 # ---------------------------------------------------------------------------
 # Install extra apt packages at runtime (if OPENCLAW_DOCKER_APT_PACKAGES set)
@@ -40,22 +45,51 @@ fi
 # Ensure gateway runs as non-root claw user
 # (upstream entrypoint still needs root for nginx + runtime setup)
 # ---------------------------------------------------------------------------
-if [ "$(id -u)" = "0" ] && [ -n "$REAL_OPENCLAW_BIN" ]; then
+if [ "$(id -u)" = "0" ]; then
   WRAPPER_DIR="/tmp/openclaw-wrapper"
   mkdir -p "$WRAPPER_DIR"
-  cat > "$WRAPPER_DIR/openclaw" <<EOF
+  if [ -n "$REAL_OPENCLAW_BIN" ]; then
+    cat > "$WRAPPER_DIR/openclaw" <<EOF
 #!/bin/bash
-if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "gateway" ]; then
+STATE_DIR="\${OPENCLAW_STATE_DIR:-/data/.openclaw}"
+OPENCLAW_JSON="\$STATE_DIR/openclaw.json"
+if [ "\$(id -u)" = "0" ] && { [ "\${1:-}" = "gateway" ] || [ "\${1:-}" = "doctor" ]; }; then
   # Upstream setup runs as root and may leave state files root-owned.
-  # Normalize ownership right before starting the long-running gateway.
-  chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
+  # Normalize ownership before commands that read/write ~/.openclaw state.
+  if ! chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data; then
+    echo "[entrypoint] WARNING: failed to chown /data recursively" >&2
+  fi
+  mkdir -p "\$STATE_DIR" 2>/dev/null || true
+  if ! chown "$OPENCLAW_USER:$OPENCLAW_USER" "\$STATE_DIR" 2>/dev/null; then
+    echo "[entrypoint] WARNING: failed to chown \$STATE_DIR" >&2
+  fi
+  chmod 700 "\$STATE_DIR" 2>/dev/null || true
+  if [ -f "\$OPENCLAW_JSON" ]; then
+    chown "$OPENCLAW_USER:$OPENCLAW_USER" "\$OPENCLAW_JSON" 2>/dev/null || true
+    chmod 600 "\$OPENCLAW_JSON" 2>/dev/null || true
+  fi
   exec sudo -E -u "$OPENCLAW_USER" "$REAL_OPENCLAW_BIN" "\$@"
 fi
 exec "$REAL_OPENCLAW_BIN" "\$@"
 EOF
-  chmod +x "$WRAPPER_DIR/openclaw"
+    chmod +x "$WRAPPER_DIR/openclaw"
+  fi
+
+  if [ -n "$REAL_NODE_BIN" ]; then
+    cat > "$WRAPPER_DIR/node" <<EOF
+#!/bin/bash
+if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "/app/scripts/configure.js" ]; then
+  # Ensure configure.js creates openclaw.json and .bak files as claw.
+  chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
+  exec sudo -E -u "$OPENCLAW_USER" "$REAL_NODE_BIN" "\$@"
+fi
+exec "$REAL_NODE_BIN" "\$@"
+EOF
+    chmod +x "$WRAPPER_DIR/node"
+  fi
+
   export PATH="$WRAPPER_DIR:$PATH"
-  echo "[entrypoint] openclaw gateway will run as user: $OPENCLAW_USER"
+  echo "[entrypoint] openclaw configure/doctor/gateway wrappers enabled for user: $OPENCLAW_USER"
 fi
 
 exec /app/scripts/entrypoint.sh "$@"
