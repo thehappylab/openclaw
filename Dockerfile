@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     wget \
     git \
+    python3 \
+    python3-pip \
     build-essential \
     procps \
     file \
@@ -55,7 +57,7 @@ RUN useradd -m -s /bin/bash claw 2>/dev/null || true \
 
 USER claw
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-RUN pip install --user google-auth
+RUN python3 -m pip install --user google-auth
 
 USER root
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
