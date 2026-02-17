@@ -66,7 +66,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g pnpm clawhub
+RUN npm install -g pnpm clawhub summarize obsidian-cli \
+    && ln -sf /usr/bin/obsidian /usr/local/bin/obsidian-cli
 
 # ---------------------------------------------------------------------------
 # Coolify CLI
