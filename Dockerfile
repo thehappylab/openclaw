@@ -51,7 +51,9 @@ RUN curl -sL "https://vault.bitwarden.com/download/?app=cli&platform=linux" -o /
 # ---------------------------------------------------------------------------
 ENV NONINTERACTIVE=1
 RUN useradd -m -s /bin/bash claw 2>/dev/null || true \
-    && echo 'claw ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+    && echo 'claw ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && mkdir -p /home/linuxbrew/.linuxbrew/Cellar \
+    && chown -R claw:claw /home/linuxbrew/.linuxbrew
 
 USER claw
 RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
