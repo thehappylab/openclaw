@@ -93,7 +93,13 @@ if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "/app/scripts/configure.js" ]; then
   if [ -n "\$OWNERSHIP_SCRIPT" ]; then
     echo "[entrypoint][node-wrapper] ownership script requested: \$OWNERSHIP_SCRIPT" >&2
     if [ -f "\$OWNERSHIP_SCRIPT" ] && [ -x "\$OWNERSHIP_SCRIPT" ]; then
-      "\$OWNERSHIP_SCRIPT" || echo "[entrypoint] WARNING: ownership script failed: \$OWNERSHIP_SCRIPT" >&2
+      echo "[entrypoint][node-wrapper] running ownership script: \$OWNERSHIP_SCRIPT" >&2
+      if "\$OWNERSHIP_SCRIPT"; then
+        echo "[entrypoint][node-wrapper] ownership script completed successfully: \$OWNERSHIP_SCRIPT" >&2
+      else
+        rc=\$?
+        echo "[entrypoint] WARNING: ownership script failed (exit=\$rc): \$OWNERSHIP_SCRIPT" >&2
+      fi
     else
       echo "[entrypoint] WARNING: OPENCLAW_DOCKER_OWNERSHIP_SCRIPT is not an executable file: \$OWNERSHIP_SCRIPT" >&2
     fi
