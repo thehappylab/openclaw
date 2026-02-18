@@ -1,6 +1,6 @@
 services:
   openclaw:
-    image: 'ghcr.io/thehappylab/openclaw:2026.2.18-2'
+    image: 'ghcr.io/thehappylab/openclaw:2026.2.18-3'
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -11,6 +11,8 @@ services:
       - OPENCLAW_DOCKER_APT_PACKAGES=${OPENCLAW_DOCKER_APT_PACKAGES}
       - OPENCLAW_GATEWAY_TOKEN=$SERVICE_PASSWORD_64_GATEWAYTOKEN
       - OPENCLAW_CUSTOM_CONFIG=${OPENCLAW_CUSTOM_CONFIG}
+
+      - OWNERSHIP_SCRIPT=${OWNERSHIP_SCRIPT}
       
       - BW_SERVER=${BW_SERVER}
       - BW_CLIENTID=${BW_CLIENTID}
