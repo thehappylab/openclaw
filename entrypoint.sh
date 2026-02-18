@@ -80,7 +80,16 @@ EOF
 #!/bin/bash
 if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "/app/scripts/configure.js" ]; then
   # Ensure configure.js creates openclaw.json and .bak files as claw.
-  chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
+  OWNERSHIP_SCRIPT="\${OPENCLAW_DOCKER_OWNERSHIP_SCRIPT:-}"
+  if [ -n "\$OWNERSHIP_SCRIPT" ]; then
+    if [ -f "\$OWNERSHIP_SCRIPT" ] && [ -x "\$OWNERSHIP_SCRIPT" ]; then
+      "\$OWNERSHIP_SCRIPT" || echo "[entrypoint] WARNING: ownership script failed: \$OWNERSHIP_SCRIPT" >&2
+    else
+      echo "[entrypoint] WARNING: OPENCLAW_DOCKER_OWNERSHIP_SCRIPT is not an executable file: \$OWNERSHIP_SCRIPT" >&2
+    fi
+  else
+    chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
+  fi
   exec sudo -E -u "$OPENCLAW_USER" "$REAL_NODE_BIN" "\$@"
 fi
 exec "$REAL_NODE_BIN" "\$@"
