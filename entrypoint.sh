@@ -78,20 +78,37 @@ EOF
   if [ -n "$REAL_NODE_BIN" ]; then
     cat > "$WRAPPER_DIR/node" <<EOF
 #!/bin/bash
+STATE_DIR="\${OPENCLAW_STATE_DIR:-/data/.openclaw}"
+OPENCLAW_JSON="\$STATE_DIR/openclaw.json"
+echo "[entrypoint][node-wrapper] invoked: uid=\$(id -u) user=\$(id -un 2>/dev/null || true) arg1=\${1:-<none>}" >&2
 if [ "\$(id -u)" = "0" ] && [ "\${1:-}" = "/app/scripts/configure.js" ]; then
   # Ensure configure.js creates openclaw.json and .bak files as claw.
+  echo "[entrypoint][node-wrapper] configure.js detected, preparing ownership for \$STATE_DIR" >&2
+  if [ -e "\$OPENCLAW_JSON" ]; then
+    ls -l "\$OPENCLAW_JSON" >&2 || true
+  else
+    echo "[entrypoint][node-wrapper] info: \$OPENCLAW_JSON does not exist yet" >&2
+  fi
   OWNERSHIP_SCRIPT="\${OPENCLAW_DOCKER_OWNERSHIP_SCRIPT:-}"
   if [ -n "\$OWNERSHIP_SCRIPT" ]; then
+    echo "[entrypoint][node-wrapper] ownership script requested: \$OWNERSHIP_SCRIPT" >&2
     if [ -f "\$OWNERSHIP_SCRIPT" ] && [ -x "\$OWNERSHIP_SCRIPT" ]; then
       "\$OWNERSHIP_SCRIPT" || echo "[entrypoint] WARNING: ownership script failed: \$OWNERSHIP_SCRIPT" >&2
     else
       echo "[entrypoint] WARNING: OPENCLAW_DOCKER_OWNERSHIP_SCRIPT is not an executable file: \$OWNERSHIP_SCRIPT" >&2
     fi
   else
+    echo "[entrypoint][node-wrapper] no ownership script set, running fallback chown /data" >&2
     chown -R "$OPENCLAW_USER:$OPENCLAW_USER" /data 2>/dev/null || true
   fi
+  if [ -e "\$OPENCLAW_JSON" ]; then
+    echo "[entrypoint][node-wrapper] post-ownership file state:" >&2
+    ls -l "\$OPENCLAW_JSON" >&2 || true
+  fi
+  echo "[entrypoint][node-wrapper] exec as $OPENCLAW_USER: $REAL_NODE_BIN \$*" >&2
   exec sudo -E -u "$OPENCLAW_USER" "$REAL_NODE_BIN" "\$@"
 fi
+echo "[entrypoint][node-wrapper] passthrough to real node: $REAL_NODE_BIN" >&2
 exec "$REAL_NODE_BIN" "\$@"
 EOF
     chmod +x "$WRAPPER_DIR/node"
